@@ -17,82 +17,31 @@ async function readFileInput() {
 
 function isIncreasingOrDecreasing(array) {
   let data = array.split(" ");
-  let newArr = data.map(Number);
-  let copyNewArr = [...newArr].reverse();
-  let listArr = [newArr, copyNewArr];
-  let result = [];
-  let validNumbers = [1, 2, 3];
-  let indexValue = [];
-  listArr.forEach((element) => {
-    let tempResult = [];
-    for (let i = 0; i < element.length - 1; i++) {
-      // Check if the abs value is a allowed value
-      let absValue = Math.abs(element[i] - element[i + 1]);
-      if (element[i] > element[i + 1] && validNumbers.includes(absValue)) {
-        tempResult.push(0);
-      } else {
-        tempResult.push(1);
-        if (indexValue.length > 0) {
-        } else {
-          element.splice[(indexValue, 1)];
-        }
-        break;
-      }
+  let Arr = data.map(Number);
+  let reversArr = [...Arr].reverse();
+  let listArrys = [Arr, reversArr];
+  let result = false;
+  for (let i = 0; i < listArrys.length; i++) {
+    let value = checkArray(listArrys[i]);
+    if (value === true) {
+      result = true;
+      break;
     }
-    if (tempResult.includes(1)) {
-      result.push(false);
-    } else {
-      if (tempResult.length > 0) {
-        result.push(true);
-      }
-    }
-  });
-
-  if (result.includes(true)) {
-    return { isSafe: true, updatedArr: newArr };
-  } else {
-    newArr.splice(indexValue[0], 1);
-    return { isSafe: false, updatedArr: newArr.splice(indexValue, 1) };
   }
+  return result;
 }
 
-async function isSafe(array) {
-  let newArr = array.map(Number);
-  let copyNewArr = [...newArr].reverse();
-  let listArr = [newArr, copyNewArr];
-  let result = [];
+function checkArray(array) {
+  let result = true;
   let validNumbers = [1, 2, 3];
-  listArr.forEach((element) => {
-    let tempResult = [];
-    for (let i = 0; i < element.length - 1; i++) {
-      if (element[i] > element[i + 1]) {
-        // Check if the abs value is a allowed value
-        let absValue = Math.abs(element[i] - element[i + 1]);
-        if (validNumbers.includes(absValue)) {
-          tempResult.push(0);
-        } else {
-          tempResult.push(1);
-        }
-      } else if (element[i] === element[i + 1]) {
-        tempResult.push(1);
-      } else {
-        tempResult.push(1);
-      }
-    }
-    if (tempResult.includes(1)) {
-      result.push(false);
+  for (let i = 0; i < array.length - 1; i++) {
+    let absValue = Math.abs(array[i] - array[i + 1]);
+    if (array[i] > array[i + 1] && validNumbers.includes(absValue)) {
     } else {
-      if (tempResult.length > 0) {
-        result.push(true);
-      }
+      result = false;
     }
-  });
-
-  if (result.includes(true)) {
-    return true;
-  } else {
-    return false;
   }
+  return result;
 }
 
 async function main() {
@@ -102,18 +51,10 @@ async function main() {
   let countUpdated = 0;
   data.forEach((row) => {
     let result = isIncreasingOrDecreasing(row);
-    newData.push(result.updatedArr);
-    if (result.isSafe) {
+    if (result) {
       countOriginal += 1;
     }
   });
-
-  for (const row of newData) {
-    let result = await isSafe(row); // Wait for each call to complete
-    if (result) {
-      countUpdated += 1;
-    }
-  }
   console.log("Sum original: " + countOriginal);
   console.log("Sum updated: " + countUpdated);
 }
