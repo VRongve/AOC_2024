@@ -22,7 +22,7 @@ function isIncreasingOrDecreasing(array) {
   let listArrys = [Arr, reversArr];
   let result = false;
   for (let i = 0; i < listArrys.length; i++) {
-    let value = checkArray(listArrys[i]);
+    let value = checkIfArraySafe(listArrys[i]);
     if (value === true) {
       result = true;
       break;
@@ -31,7 +31,7 @@ function isIncreasingOrDecreasing(array) {
   return result;
 }
 
-function checkArray(array) {
+function checkIfArraySafe(array) {
   let result = true;
   let validNumbers = [1, 2, 3];
   for (let i = 0; i < array.length - 1; i++) {
