@@ -16,27 +16,10 @@ async function readFileInput() {
   }
 }
 
-function isIncreasingOrDecreasing(array) {
-  let data = array.split(" ");
-  let Arr = data.map(Number);
-  let reversArr = [...Arr].reverse();
-  let listArrys = [Arr, reversArr];
-  let result = false;
-  for (let i = 0; i < listArrys.length; i++) {
-    let value = checkIfArraySafe(listArrys[i]);
-    if (value === true) {
-      result = true;
-      break;
-    }
-  }
-
-  return result;
-}
-
-function isIncreasingOrDecreasingPart2(array) {
-  let result = false;
+function isSafeRow(array) {
   let reversArr = [...array].reverse();
   let listArrys = [array, reversArr];
+  let result = false;
   for (let i = 0; i < listArrys.length; i++) {
     let value = checkIfArraySafe(listArrys[i]);
     if (value === true) {
@@ -53,7 +36,9 @@ function checkIfArraySafe(array) {
   let validNumbers = [1, 2, 3];
   for (let i = 0; i < array.length - 1; i++) {
     let absValue = Math.abs(array[i] - array[i + 1]);
-    if (array[i] > array[i + 1] && validNumbers.includes(absValue)) {
+    let test1 = array[i] > array[i + 1];
+    let test2 = validNumbers.includes(absValue);
+    if (test1 === true && test2 === true) {
     } else {
       result = false;
       break;
@@ -64,12 +49,13 @@ function checkIfArraySafe(array) {
 
 async function main() {
   let data = await readFileInput();
-  let newData = [];
   let countOriginalSafe = 0;
   let countUpdatedSafe = 0;
   let unSafeArrays = [];
   data.forEach((row) => {
-    let result = isIncreasingOrDecreasing(row);
+    let data = row.split(" ");
+    let Arr = data.map(Number);
+    let result = isSafeRow(Arr);
     if (result) {
       countOriginalSafe += 1;
     } else {
@@ -79,14 +65,12 @@ async function main() {
   console.log("Sum original safe rows: " + countOriginalSafe);
 
   // Part 2
-
   unSafeArrays.forEach((row) => {
     let data = row.split(" ");
-    let Arr = data.map(Number);
-    for (let i = 0; i < Arr.length - 1; i++) {
-      let updatedArr = [...Arr];
-      updatedArr.splice(i, 1);
-      let result = isIncreasingOrDecreasingPart2(updatedArr);
+    let Arr = data.map((item) => Number(item));
+    for (let i = 0; i < Arr.length; i++) {
+      let modifiedArray = Arr.filter((item, index) => index !== i);
+      let result = isSafeRow(modifiedArray);
       if (result) {
         countUpdatedSafe += 1;
         break;
@@ -96,7 +80,9 @@ async function main() {
 
   console.log("Sum updated safe rows: " + countUpdatedSafe);
 
-  console.log("Total Safe Rows: " + (countOriginalSafe + countUpdatedSafe));
+  let totalSafeRows = countOriginalSafe + countUpdatedSafe;
+
+  console.log("Sum total safe rows: " + totalSafeRows);
 }
 
 main();
