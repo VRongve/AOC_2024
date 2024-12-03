@@ -1,6 +1,3 @@
-const { unsubscribe } = require("diagnostics_channel");
-const { reverse } = require("dns");
-
 const fs = require("fs").promises; // Use the promises API
 
 async function readFileInput() {
