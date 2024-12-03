@@ -46,11 +46,12 @@ function calculateSubsetData(data) {
 async function main() {
   let data = await readFileInput();
   let newString = data.join("");
+  let updatedString = "do()" + newString + "don't()";
 
   // Part 1
 
   // find matches
-  let arrayOfMul = findMatches(newString);
+  let arrayOfMul = findMatches(updatedString);
 
   // calculate total
   let sumPart1 = calculateMul(arrayOfMul);
@@ -58,17 +59,12 @@ async function main() {
   console.log("Sum part1: " + sumPart1);
 
   // Part 2
-
-  // calculate mul of first subset data
-  let regexPattern1 = /^(.*?)don't\(\)/g;
-  let firstSubsetString = getSubsetData(newString, regexPattern1);
-  let sumFirstSubsetData = calculateSubsetData(firstSubsetString);
   // calculate mul of second subset data
-  let regexPattern2 = /do\(\)(.*?)don't\(\)/g;
-  let secondSubsetStrings = getSubsetData(newString, regexPattern2);
+  let regexPattern = /do\(\)(.*?)don\'t\(\)/gs;
+  let secondSubsetStrings = getSubsetData(updatedString, regexPattern);
   let sumSecondSubsetData = calculateSubsetData(secondSubsetStrings);
 
-  let sumPart2 = sumFirstSubsetData + sumSecondSubsetData;
+  let sumPart2 = sumSecondSubsetData;
   console.log("Sum part 2: " + sumPart2);
 }
 
