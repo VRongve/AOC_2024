@@ -34,9 +34,10 @@ function processHorizontalCount(row1, row2, row3, row4) {
     // Loop through string and count occurences
     for (let i = 0; i < row.length - 3; i++) {
       let stringResult = row[i] + row[i + 1] + row[i + 2] + row[i + 3];
-      console.log(stringResult);
-      if (stringResult === "XMAS" || stringResult === "SAMX") {
+      let stringResultReverse = row[i + 3] + row[i + 2] + row[i + 1] + row[i];
+      if (stringResult === "XMAS" || stringResultReverse === "XMAS") {
         count += 1;
+        break;
       }
     }
   });
@@ -60,14 +61,26 @@ function processDiagonalCount(row1, row2, row3, row4) {
   for (let i = 0; i < row1.length - 3; i++) {
     let stringResultDiagonal1 =
       row1[i] + row2[i + 1] + row3[i + 2] + row4[i + 3];
+    let stringResultDiagonal1Reverse =
+      row4[i + 3] + row3[i + 2] + row2[i + 1] + row1[i];
     let stringResultDiagonal2 =
       row1[i + 3] + row2[i + 2] + row3[i + 1] + row4[i];
+    let stringResultDiagonal2Reverse =
+      row4[i] + row3[i + 1] + row2[i + 2] + row1[i + 3];
 
+    // check first diagonal
     if (
       stringResultDiagonal1 === "XMAS" ||
-      stringResultDiagonal1 === "SAMX" ||
+      stringResultDiagonal1Reverse === "XMAS"
+    ) {
+      count += 1;
+    }
+
+    // check second diagonal
+
+    if (
       stringResultDiagonal2 === "XMAS" ||
-      stringResultDiagonal2 === "SAMX"
+      stringResultDiagonal2Reverse === "XMAS"
     ) {
       count += 1;
     }
