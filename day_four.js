@@ -13,34 +13,17 @@ async function readFileInput() {
   }
 }
 
-function processXmasRows(row1, row2, row3, row4) {
-  let sumRowsCount = 0;
-  let horizontalCount = processHorizontalCount(row1, row2, row3, row4);
-  console.log("Horizontal Count: " + horizontalCount);
-  let verticalCount = processVerticalCount(row1, row2, row3, row4);
-  console.log("Vertical Count: " + verticalCount);
-  let diagonalCount = processDiagonalCount(row1, row2, row3, row4);
-  console.log("Diagonal Count: " + diagonalCount);
-
-  sumRowsCount += horizontalCount + verticalCount + diagonalCount;
-
-  return sumRowsCount;
-}
-
-function processHorizontalCount(row1, row2, row3, row4) {
+function processHorizontalCount(row) {
   let count = 0;
-  let listRows = [row1, row2, row3, row4];
-  listRows.forEach((row) => {
-    // Loop through string and count occurences
-    for (let i = 0; i < row.length - 3; i++) {
-      let stringResult = row[i] + row[i + 1] + row[i + 2] + row[i + 3];
-      let stringResultReverse = row[i + 3] + row[i + 2] + row[i + 1] + row[i];
-      if (stringResult === "XMAS" || stringResultReverse === "XMAS") {
-        count += 1;
-        break;
-      }
+  // Loop through string and count occurences
+  for (let i = 0; i < row.length - 3; i++) {
+    let stringResult = row[i] + row[i + 1] + row[i + 2] + row[i + 3];
+    let stringResultReverse = row[i + 3] + row[i + 2] + row[i + 1] + row[i];
+    if (stringResult === "XMAS" || stringResultReverse === "XMAS") {
+      count += 1;
     }
-  });
+  }
+
   return count;
 }
 
@@ -52,6 +35,7 @@ function processVerticalCount(row1, row2, row3, row4) {
       count += 1;
     }
   }
+
   return count;
 }
 
@@ -92,17 +76,31 @@ async function main() {
   let data = await readFileInput();
 
   let countXmasTimes = 0;
-
-  for (let i = 0; i < data.length - 3; i++) {
-    // Process 4 rows at the time
-    let row1 = data[i];
-    let row2 = data[i + 1];
-    let row3 = data[i + 2];
-    let row4 = data[i + 3];
-
-    let count = processXmasRows(row1, row2, row3, row4);
-
-    countXmasTimes += count;
+  for (let i = 0; i < data.length; i++) {
+    let horizontalCount = 0;
+    let verticalCount = 0;
+    let diagonalCount = 0;
+    horizontalCount = processHorizontalCount(data[i]);
+    console.log("Horizontal count: " + horizontalCount);
+    if (i >= data.length - 3) {
+      // Skip
+    } else {
+      verticalCount = processVerticalCount(
+        data[i],
+        data[i + 1],
+        data[i + 2],
+        data[i + 3]
+      );
+      console.log("Vertical Count: " + verticalCount);
+      diagonalCount = processDiagonalCount(
+        data[i],
+        data[i + 1],
+        data[i + 2],
+        data[i + 3]
+      );
+      console.log("Diagonal count: " + diagonalCount);
+    }
+    countXmasTimes += horizontalCount + verticalCount + diagonalCount;
   }
 
   console.log("Count Xmas Occurences: " + countXmasTimes);
