@@ -16,8 +16,11 @@ async function readFileInput() {
 function processXmasRows(row1, row2, row3, row4) {
   let sumRowsCount = 0;
   let horizontalCount = processHorizontalCount(row1, row2, row3, row4);
+  console.log("Horizontal Count: " + horizontalCount);
   let verticalCount = processVerticalCount(row1, row2, row3, row4);
+  console.log("Vertical Count: " + verticalCount);
   let diagonalCount = processDiagonalCount(row1, row2, row3, row4);
+  console.log("Diagonal Count: " + diagonalCount);
 
   sumRowsCount += horizontalCount + verticalCount + diagonalCount;
 
@@ -55,8 +58,17 @@ function processDiagonalCount(row1, row2, row3, row4) {
   let count = 0;
   // Loop through string and count occurences
   for (let i = 0; i < row1.length - 3; i++) {
-    let stringResult = row1[i] + row2[i + 1] + row3[i + 2] + row4[i + 3];
-    if (stringResult === "XMAS" || stringResult === "SAMX") {
+    let stringResultDiagonal1 =
+      row1[i] + row2[i + 1] + row3[i + 2] + row4[i + 3];
+    let stringResultDiagonal2 =
+      row1[i + 3] + row2[i + 2] + row3[i + 1] + row4[i];
+
+    if (
+      stringResultDiagonal1 === "XMAS" ||
+      stringResultDiagonal1 === "SAMX" ||
+      stringResultDiagonal2 === "XMAS" ||
+      stringResultDiagonal2 === "SAMX"
+    ) {
       count += 1;
     }
   }
@@ -68,7 +80,7 @@ async function main() {
 
   let countXmasTimes = 0;
 
-  for (let i = 0; i < data.length - 4; i++) {
+  for (let i = 0; i < data.length - 3; i++) {
     // Process 4 rows at the time
     let row1 = data[i];
     let row2 = data[i + 1];
