@@ -30,14 +30,86 @@ async function readFileInput() {
   return { part1: part1, part2: part2 };
 }
 
+function processUpdate(update, orders) {
+  let result = false;
+  let listAllPairs = [];
+  for (let i = 0; i < update.length - 1; i++) {
+    let arrayOfPairs = [];
+    for (let j = i + 1; j < update.length; j++) {
+      arrayOfPairs.push([update[i], update[j]]);
+    }
+    listAllPairs.push(arrayOfPairs);
+  }
+
+  let orderResult = checkOrder(listAllPairs, orders);
+
+  let middleNumber = 0;
+  if (orderResult) {
+    // get the middle number from the update
+    let middleIndex = Math.floor(update.length / 2);
+    middleNumber = update[middleIndex];
+    result = orderResult;
+  }
+
+  return { result: result, middleNumber: middleNumber };
+}
+
+function checkOrder(listAllPairs, orders) {
+  let result = true;
+
+  listAllPairs.forEach((listOfPair) => {
+    for (let i = 0; i < listOfPair.length; i++) {
+      let isParInOrderList = checkIfParIsInOrderList(listOfPair[i], orders);
+      if (!isParInOrderList) {
+        result = false;
+        break;
+      }
+    }
+  });
+
+  return result;
+}
+
+function checkIfParIsInOrderList(pair, orders) {
+  for (let i = 0; i < orders.length; i++) {
+    let isPairInOrderList = JSON.stringify(pair) === JSON.stringify(orders[i]);
+    if (isPairInOrderList) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function processIncorrectlyUpdates(update) {
+  update.sort((a, b) => b - a);
+  return update[Math.floor(update.length / 2)];
+}
+
 async function main() {
   const data = await readFileInput();
 
-  const dataPart1 = data.part1;
-  const dataPart2 = data.part2;
+  const orders = data.part1;
+  const updates = data.part2;
 
-  console.log(dataPart1);
-  console.log(dataPart2);
+  let sumMiddleNumber = 0;
+  let sumMiddleNumberFixedUpdates = 0;
+
+  updates.forEach((update) => {
+    // Check each update for its order
+    let result = processUpdate(update, orders);
+    if (result.result) {
+      sumMiddleNumber += result.middleNumber;
+    } else {
+      let resultFixedUpdates = processIncorrectlyUpdates(update);
+      sumMiddleNumberFixedUpdates += resultFixedUpdates;
+    }
+  });
+
+  // Part 1:
+  console.log("Sum: " + sumMiddleNumber);
+
+  // Part 2:
+  console.log("Sum Part 2: " + sumMiddleNumberFixedUpdates);
 }
 
 main();
