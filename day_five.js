@@ -41,6 +41,8 @@ function processUpdate(update, orders) {
     listAllPairs.push(arrayOfPairs);
   }
 
+  console.log("List all pairs: " + listAllPairs);
+
   let orderResult = checkOrder(listAllPairs, orders);
 
   let middleNumber = 0;
@@ -80,9 +82,30 @@ function checkIfParIsInOrderList(pair, orders) {
   return false;
 }
 
-function processIncorrectlyUpdates(update) {
-  update.sort((a, b) => b - a);
-  return update[Math.floor(update.length / 2)];
+function processIncorrectlyUpdates(update, orders) {
+  let updateListStatus = false;
+  let result = {};
+  while (updateListStatus === false) {
+    for (let i = 0; i < update.length - 1; i++) {
+      let pair = [update[i], update[i + 1]];
+      let pairInOrderList = checkIfParIsInOrderList(pair, orders);
+      if (pairInOrderList) {
+      } else {
+        let val1 = update[i];
+        let val2 = update[i + 1];
+        update[i] = val2;
+        update[i + 1] = val1;
+      }
+    }
+
+    // check if order is okay
+    result = processUpdate(update, orders);
+    if (result.result === true) {
+      updateListStatus = true;
+    }
+  }
+
+  return result;
 }
 
 async function main() {
@@ -100,8 +123,11 @@ async function main() {
     if (result.result) {
       sumMiddleNumber += result.middleNumber;
     } else {
-      let resultFixedUpdates = processIncorrectlyUpdates(update);
-      sumMiddleNumberFixedUpdates += resultFixedUpdates;
+      // Fix the updates which are not in order
+      let resultFixedUpdates = processIncorrectlyUpdates(update, orders);
+      if (resultFixedUpdates.result) {
+        sumMiddleNumberFixedUpdates += resultFixedUpdates.middleNumber;
+      }
     }
   });
 
