@@ -1,47 +1,38 @@
-let row = "MMMSXXMASM\r";
+const fs = require("fs").promises; // Use the promises API
 
-let count = 0;
+async function readFileInput() {
+  try {
+    const data = await fs.readFile(
+      "C:/Github/AOC_2024/day_five_input_test.txt",
+      "utf8"
+    );
+    let dataList = data
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line !== "");
 
-let row1 = "XMASS";
-let row2 = "MMSSS";
-let row3 = "AAASS";
-let row4 = "SASSS";
+    console.log(dataList);
 
-// Loop through string and count occurences
-for (let i = 0; i < row.length - 3; i++) {
-  let stringResult = row[i] + row[i + 1] + row[i + 2] + row[i + 3];
-  if (stringResult === "XMAS" || stringResult === "SAMX") {
-    count += 1;
+    const part1 = [];
+    const part2 = [];
+
+    lines.forEach((line) => {
+      if (line.includes("|")) {
+        const pair = line.split("|").map(Number);
+        part1.push(pair);
+      } else {
+        const numbers = line.split(",").map(Number);
+        part2.push(numbers);
+      }
+    });
+    return dataList;
+  } catch (err) {
+    console.error("Error reading the file:", err);
   }
 }
 
-console.log("Count Hori: " + count);
-
-function processVerticalCount(row1, row2, row3, row4) {
-  let count = 0;
-  for (let i = 0; i < row1.length; i++) {
-    let stringResult = row1[i] + row2[i] + row3[i] + row4[i];
-    if (stringResult === "XMAS" || stringResult === "SAMX") {
-      count += 1;
-    }
-  }
-  return count;
+async function main() {
+  const data = await readFileInput();
 }
 
-console.log("Vertcal Count: " + processVerticalCount(row1, row2, row3, row4));
-
-function processDiagonalCount(row1, row2, row3, row4) {
-  let count = 0;
-  // Loop through string and count occurences
-  for (let i = 0; i < row.length - 3; i++) {
-    let stringResult = row1[i] + row2[i + 1] + row3[i + 2] + row4[i + 3];
-    if (stringResult === "XMAS" || stringResult === "SAMX") {
-      count += 1;
-    }
-  }
-  return count;
-}
-
-console.log(
-  "Horizontal Count: " + processDiagonalCount(row1, row2, row3, row4)
-);
+main();
