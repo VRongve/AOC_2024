@@ -6,7 +6,7 @@ async function readFileInput() {
 
   // Read the file
   const data = await fs.readFile(
-    "C:/Github/AOC_2024/day_five_input_test.txt",
+    "C:/Github/AOC_2024/day_five_input.txt",
     "utf8"
   );
 
@@ -30,18 +30,14 @@ async function readFileInput() {
   return { part1: part1, part2: part2 };
 }
 
+function generatePairs(array) {
+  result = array.flatMap((v, i) => array.slice(i + 1).map((w) => [v, w]));
+  return result;
+}
+
 function processUpdate(update, orders) {
   let result = false;
-  let listAllPairs = [];
-  for (let i = 0; i < update.length - 1; i++) {
-    let arrayOfPairs = [];
-    for (let j = i + 1; j < update.length; j++) {
-      arrayOfPairs.push([update[i], update[j]]);
-    }
-    listAllPairs.push(arrayOfPairs);
-  }
-
-  console.log("List all pairs: " + listAllPairs);
+  let listAllPairs = generatePairs(update);
 
   let orderResult = checkOrder(listAllPairs, orders);
 
@@ -56,19 +52,16 @@ function processUpdate(update, orders) {
   return { result: result, middleNumber: middleNumber };
 }
 
-function checkOrder(listAllPairs, orders) {
+function checkOrder(pairs, orders) {
   let result = true;
 
-  listAllPairs.forEach((listOfPair) => {
-    for (let i = 0; i < listOfPair.length; i++) {
-      let isParInOrderList = checkIfParIsInOrderList(listOfPair[i], orders);
-      if (!isParInOrderList) {
-        result = false;
-        break;
-      }
+  for (let i = 0; i < pairs.length; i++) {
+    let isParInOrderList = checkIfParIsInOrderList(pairs[i], orders);
+    if (!isParInOrderList) {
+      result = false;
+      break;
     }
-  });
-
+  }
   return result;
 }
 
