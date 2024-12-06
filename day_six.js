@@ -5,10 +5,10 @@ const fs = require("fs").promises; // Use the promises API
 async function readFileInput() {
   try {
     const data = await fs.readFile(
-      "C:/Github/AOC_2024/day_six_input_test.txt",
+      "C:/Github/AOC_2024/day_six_input.txt",
       "utf8"
     );
-    let dataList = data.split("\n");
+    let dataList = data.split("\n").map((row) => row.replace(/\r/gs, ""));
     return dataList;
   } catch (err) {
     console.error("Error reading the file:", err);
@@ -16,118 +16,131 @@ async function readFileInput() {
 }
 
 function findGuardPositionAndDirection(map) {
-  let indexPos = 0;
-  let rowPos = 0;
-  let direction = 0;
-  let flag = true;
+  let guardIndex = -1;
+  let guardRow = -1;
+  let guardDir = -1;
   for (let i = 0; i < map.length; i++) {
-    if (flag) {
-      for (let j = 0; j < map[i].length; j++) {
-        console.log("Element: " + map[i][j]);
-        let indexOfUp = map[i][j].indexOf("^");
-        let indexOfDown = map[i][j].indexOf("v");
-        let indexOfLeft = map[i][j].indexOf("<");
-        let indexOfRight = map[i][j].indexOf(">");
-        if (indexOfUp > -1) {
-          direction = 0;
-          rowPos = i;
-          indexPos = indexOfUp;
-          flag = false;
-          break;
-        } else if (indexOfDown > -1) {
-          direction = 1;
-          rowPos = i;
-          indexPos = indexOfDown;
-          flag = false;
-          break;
-        } else if (indexOfRight > -1) {
-          direction = 2;
-          rowPos = i;
-          indexPos = indexOfRight;
-          flag = false;
-          break;
-        } else if (indexOfLeft > -1) {
-          direction = 3;
-          rowPos = i;
-          indexPos = indexOfLeft;
-          flag = false;
-          break;
-        } else {
-        }
-      }
-    } else {
+    let indexOfUp = map[i].indexOf("^");
+    let indexOfDown = map[i].indexOf("v");
+    let indexOfLeft = map[i].indexOf("<");
+    let indexOfRight = map[i].indexOf(">");
+    if (indexOfUp > -1) {
+      guardDir = 0;
+      guardRow = i;
+      guardIndex = indexOfUp;
       break;
+    } else if (indexOfDown > -1) {
+      guardDir = 2;
+      guardRow = i;
+      guardIndex = indexOfDown;
+      break;
+    } else if (indexOfRight > -1) {
+      guardDir = 1;
+      guardRow = i;
+      guardIndex = indexOfRight;
+      break;
+    } else if (indexOfLeft > -1) {
+      guardDir = 3;
+      guardRow = i;
+      guardIndex = indexOfLeft;
+      break;
+    } else {
+      // Check next row
     }
   }
   // row, index, direction
-  return [rowPos, indexPos, direction];
-}
-
-function moveGuardPosition(guardPosition, map) {
-  let rowPos = guardPosition[0];
-  let indexPos = guardPosition[1];
-  let direction = guardPosition[2];
-
-  // Num loopings
-  let numLoops = 0;
-
-  let result = {};
-
-  // if direction up
-  if (direction === 0) {
-    // number of rows available up
-    numLoops = 0;
-    result = moveGuard(map, numLoops, indexPos, rowPos, direction);
-  } else if (direction === 1) {
-    numLoops = map.length - rowPos + 1;
-  } else if (direction === 2) {
-    numLoops = indexPos;
-  } else {
-    numLoops = map[0].length - indexPos + 1;
-  }
+  return [guardRow, guardIndex, guardDir];
 }
 
 function changeGuardDirection(direction) {
+  let guardDirections = ["^", ">", "v", "<"];
+
   if (direction === 3) {
-    return 0;
+    return guardDirections[0];
   } else {
-    return direction + 1;
+    return guardDirections[direction + 1];
   }
 }
 
-function moveGuard(map, numLoops, indexPos, rowPos, direction) {
-  let count = 0;
-  for (let i = rowPos; i > numLoops; i--) {
-    if (map[i - 1][0][indexPos] === "#") {
-      let newDirection = changeGuardDirection(direction);
-      map[i - 1][0][indexPos] = "X";
+function moveGuard(guardRow, guardIndex, guardDir, map) {
+  let flag = true;
+  try {
+    if (guardDir === 0) {
+      // move upwards
+      if (map[guardRow - 1][guardIndex] === "#") {
+        // Switch direction
+        map[guardRow][guardIndex] = changeGuardDirection(guardDir);
+      } else {
+        // Set X where guard have been
+        map[guardRow][guardIndex] = "X";
+        map[guardRow - 1][guardIndex] = "^";
+      }
+    } else if (guardDir === 2) {
+      // move downwards
+      if (map[guardRow + 1][guardIndex] === "#") {
+        // Switch direction
+        map[guardRow][guardIndex] = changeGuardDirection(guardDir);
+      } else {
+        // Set X where guard have been
+        map[guardRow][guardIndex] = "X";
+        map[guardRow + 1][guardIndex] = "v";
+      }
+    } else if (guardDir === 1) {
+      // move left
+      if (map[guardRow][guardIndex + 1] === "#") {
+        // Switch direction
+        map[guardRow][guardIndex] = changeGuardDirection(guardDir);
+      } else {
+        // Set X where guard have been
+        map[guardRow][guardIndex] = "X";
+        map[guardRow][guardIndex + 1] = ">";
+      }
     } else {
-      count += 1;
-      map[i][0][indexPos] = "X";
-      map[i - 1][0][indexPos] = "^";
-      // Print the array in the desired format
-      map.forEach((row) => console.log(row.join()));
-      console.log(""); // Add a blank line between iterations if needed
+      // move right
+      if (map[guardRow][guardIndex - 1] === "#") {
+        // Switch direction
+        map[guardRow][guardIndex] = changeGuardDirection(guardDir);
+      } else {
+        // Set X where guard have been
+        map[guardRow][guardIndex] = "X";
+        map[guardRow][guardIndex - 1] = "<";
+      }
     }
+    return flag;
+  } catch (error) {
+    map[guardRow][guardIndex] = "X";
+    flag = false;
+    return flag;
   }
-  return { count: count, positions: positions };
+}
+
+function processGuardMap(map) {
+  let guardPos = findGuardPositionAndDirection(map);
+
+  let flag = moveGuard(guardPos[0], guardPos[1], guardPos[2], map);
+
+  return flag;
+}
+
+function sumNumX(map) {
+  let mapString = map.map((row) => row.join("")).join("");
+  let count = mapString.split("X").length - 1;
+  return count;
 }
 
 async function main() {
   const data = await readFileInput();
-  const processedData = data.map((x) => [x.split("")]);
 
-  processedData.forEach((row) => console.log(row.join("")));
-  console.log(" ");
+  let map = [...data].map((row) => row.split(""));
 
-  let map = [...processedData];
+  let processMap = true;
+  while (processMap === true) {
+    processMap = processGuardMap(map);
+    //let output = map.map((row) => row.join("")).join("\n");
+  }
 
-  let storeGuardPositions = [];
-
-  let guardPosition = findGuardPositionAndDirection(map);
-  let moveGuard = moveGuardPosition(guardPosition, map);
-
-  console.log(guardPosition);
+  let numX = sumNumX(map);
+  console.log("Num X: " + numX);
 }
 
 main();
